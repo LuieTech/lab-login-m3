@@ -1,5 +1,4 @@
 const User = require('../models/user.model')
-const createError = require('http-errors');
 
 module.exports.hello = (req, res, next) => {
 
@@ -16,7 +15,7 @@ module.exports.create = (req, res, next) => {
 
   User.create({email,password})
     .then((user) => {
-      res.status(200).json(user)
+      res.status(201).json(user)
     }
     ).catch((error) => next(createError(400)))
 }
@@ -30,14 +29,18 @@ module.exports.login = (req, res, next) => {
           .then((match) => {
             if(match){
               req.session.userId = user.id;
-              res.json(user)
+              // console.log("este es el req.session: ", user.id)
+              // res.cookie('testCookie', 'testValue').send('Cookie set');
+              res.status(200).json(user)
+
             } else {
-              res.status(401).json({ error: "user not found" })
+              res.status(401).json({ error: "unauthorized" })
             }
           })
       } else {
         res.status(401).json({ error: "unauthorized" });
       }
-    }).catch((error) => next(error))
+    }).catch(next)
 
 }
+
