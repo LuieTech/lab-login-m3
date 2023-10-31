@@ -22,25 +22,25 @@ module.exports.create = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
 
-  User.findOne({email: req.body.email})
+  User.findOne({ email : req.body.email})
     .then((user) => {
-      if(user){
-        user.checkPassword(req.body.password)
+      if (user) {
+        return user.checkPassword(req.body.password)
           .then((match) => {
-            if(match){
+            if(match) {
               req.session.userId = user.id;
-              // console.log("este es el req.session: ", user.id)
-              // res.cookie('testCookie', 'testValue').send('Cookie set');
-              res.status(200).json(user)
-
+              res.json(user)
             } else {
-              res.status(401).json({ error: "unauthorized" })
+              res.status(401).json({ error: "unauthorized" });
             }
           })
+
       } else {
-        res.status(401).json({ error: "unauthorized" });
+        res.status(401).json({ error: "user not found" })
+        
       }
-    }).catch(next)
+    })
+    .catch((error) => next(error))
 
 }
 
